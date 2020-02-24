@@ -35,8 +35,7 @@ def check_launcher_version():
         content = json.loads(content)
         version = content["data"]["Version"]
         if version != LAUNCHER_VERSION:
-            with open(__file__, 'r') as f:
-                lines = f.read().split('\n')
+            LAUNCHER_VERSION = version
             print("Got current launcher version: {}".format(version))
 
 def check_game_version():

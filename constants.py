@@ -11,6 +11,7 @@ PROD_ENDPOINT = "https://prod.escapefromtarkov.com"
 TRADING_ENDPOINT = "https://trading.escapefromtarkov.com"
 RAGFAIR_ENDPOINT = "https://ragfair.escapefromtarkov.com"
 
+# Check the current launcher version and update if necessary
 def check_launcher_version():
     global LAUNCHER_VERSION, LAUNCHER_ENDPOINT
     url = "{}/launcher/GetLauncherDistrib".format(LAUNCHER_ENDPOINT)
@@ -38,6 +39,7 @@ def check_launcher_version():
             LAUNCHER_VERSION = version
             print("Got current launcher version: {}".format(version))
 
+# Check the current game version and update if necessary
 def check_game_version():
     global LAUNCHER_ENDPOINT, LAUNCHER_VERSION, GAME_VERSION
     url = "{}/launcher/GetPatchList?launcherVersion={}&branch=live".format(

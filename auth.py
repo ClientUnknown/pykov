@@ -44,6 +44,7 @@ class Auth:
 
         return json.loads(rsp)
 
+    # Complete login if two-factor authentication is required; prompt user for input
     def login_2fa(self, email):
         code = input("Enter the 2fa code: ")
         url = "{}/launcher/hardwareCode/activate?launcherVersion={}".format(
@@ -62,6 +63,7 @@ class Auth:
         
         return rsp
 
+    # Setup a session once we have a connection
     def exchange_access_token(self, access_token, hwid):
         url = "{}/launcher/game/start?launcherVersion={}&branch=live".format(
             constants.PROD_ENDPOINT, constants.LAUNCHER_VERSION

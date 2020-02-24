@@ -7,17 +7,21 @@ import zlib
 
 class Tarkov:
     def __init__(self, email, password):
-        self.req_counter = 0
+        self.req_counter = 0    # Keep a counter for number of requests made
 
-        constants.check_launcher_version()
-        constants.check_game_version()
+        constants.check_launcher_version()  # Update launcher version if necessary
+        constants.check_game_version()  # Update game version if necessary
+
+        # Retrieve a hwid to use for our connection, attempt to login to EFT
+        # servers, generate a session, and then select the profile to be used
+        # for all REST queries
         self.hwid = hwid.generate_hwid()
         self.auth = auth.Auth(self.hwid)
         self.user = self.auth.login(email, password)
         self.session = self.auth.exchange_access_token(self.user['data']['access_token'],self.hwid)
         self.session_id = self.session['data']['session']
         self.profile = self.select_profile()
-        print("Tarkov connection has been established")
+        print("Tarkov connection has been established") # If we get this far, we're in
 
     # Send a request to the server to keep us connected
     # Disconnects will happen after 30 seconds of inactivity
@@ -37,6 +41,7 @@ class Tarkov:
             print("Unable to keep connection alive; error: {}".format(rsp.status_code))
             return False
 
+    # Returns a dictionary of profiles
     def get_profiles(self):
         url = "{}/client/game/profile/list".format(constants.PROD_ENDPOINT)
         body = {}
@@ -54,6 +59,8 @@ class Tarkov:
 
         return None
 
+    # Selects our profile, returning a dictionary with various profile information
+    # This profile will be used for all queries in the session
     def select_profile(self):
         profiles = self.get_profiles()
         for profile in profiles['data']:
@@ -79,6 +86,7 @@ class Tarkov:
 
         return None
 
+    # Returns a dictionary with the currently selected profile's friends
     def get_friends(self):
         url = "{}/client/friend/list".format(constants.PROD_ENDPOINT)
         body = {}
@@ -96,6 +104,7 @@ class Tarkov:
 
         return None
 
+    # Returns a dictionary of all traders
     def get_traders(self):
         url = "{}/client/trading/api/getTradersList".format(constants.TRADING_ENDPOINT)
         body = {}
@@ -113,6 +122,7 @@ class Tarkov:
 
         return None
 
+    # Returns a dictionary with a specific trader's information
     def select_trader(self, trader_name):
         trader_id = self.get_trader_id(trader_name)
         if not trader_id:
@@ -136,6 +146,7 @@ class Tarkov:
         
         return None
 
+    # Returns a dictionary with all items that a trader sells based on your profile
     def get_trader_items(self, trader_name):
         trader_id = self.get_trader_id(trader_name)
         if not trader_id:
@@ -159,6 +170,7 @@ class Tarkov:
 
         return None
 
+    # Gets the schema ID for a trader based on their English name
     def get_trader_id(self, trader_name):
         locale = self.get_i18n_english()
         traders = self.get_traders()
@@ -170,6 +182,7 @@ class Tarkov:
         print("Unable to find requested trader {}".format(trader_name))
         return None
 
+    # Returns a dictionary with all the items in the game
     def get_items(self):
         url = "{}/client/items".format(constants.PROD_ENDPOINT)
         body = {}
@@ -187,6 +200,7 @@ class Tarkov:
         
         return None
 
+    # Returns a dictionary with the English translation table
     def get_i18n_english(self):
         url = "{}/client/locale/en".format(constants.PROD_ENDPOINT)
         body = {}

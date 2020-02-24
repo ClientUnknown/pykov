@@ -1,14 +1,16 @@
 from pykov import auth
 from pykov import hwid
+from pykov import constants
 import requests
 import json
 import zlib
-from pykov.constants import *
 
 class Tarkov:
     def __init__(self, email, password):
         self.req_counter = 0
 
+        constants.check_launcher_version()
+        constants.check_game_version()
         self.hwid = hwid.generate_hwid()
         self.auth = auth.Auth(self.hwid)
         self.user = self.auth.login(email, password)
@@ -20,11 +22,11 @@ class Tarkov:
     # Send a request to the server to keep us connected
     # Disconnects will happen after 30 seconds of inactivity
     def keep_alive(self):
-        url = "{}/client/game/keepalive".format(PROD_ENDPOINT)
+        url = "{}/client/game/keepalive".format(constants.PROD_ENDPOINT)
         body = {}
         headers = {
             'Content-Type': 'application/json',
-            'User-Agent': 'BSG Launcher {}'.format(LAUNCHER_VERSION) }
+            'User-Agent': 'BSG Launcher {}'.format(constants.LAUNCHER_VERSION) }
         
         rsp = requests.post(url, json=body, headers=headers)
 
@@ -36,7 +38,7 @@ class Tarkov:
             return False
 
     def get_profiles(self):
-        url = "{}/client/game/profile/list".format(PROD_ENDPOINT)
+        url = "{}/client/game/profile/list".format(constants.PROD_ENDPOINT)
         body = {}
         headers = self.__get_headers_client()
 
@@ -61,7 +63,7 @@ class Tarkov:
             print("Could not find profile")
             return None
 
-        url = "{}/client/game/profile/select".format(PROD_ENDPOINT)
+        url = "{}/client/game/profile/select".format(constants.PROD_ENDPOINT)
         body = {"uid": self.profile['_id'].rstrip()}
         headers = self.__get_headers_client()
 
@@ -78,7 +80,7 @@ class Tarkov:
         return None
 
     def get_friends(self):
-        url = "{}/client/friend/list".format(PROD_ENDPOINT)
+        url = "{}/client/friend/list".format(constants.PROD_ENDPOINT)
         body = {}
         headers = self.__get_headers_client()
 
@@ -95,7 +97,7 @@ class Tarkov:
         return None
 
     def get_traders(self):
-        url = "{}/client/trading/api/getTradersList".format(TRADING_ENDPOINT)
+        url = "{}/client/trading/api/getTradersList".format(constants.TRADING_ENDPOINT)
         body = {}
         headers = self.__get_headers_client()
 
@@ -117,7 +119,7 @@ class Tarkov:
             return None
 
         url = "{}/client/trading/api/getTrader/{}".format(
-            TRADING_ENDPOINT, trader_id
+            constants.TRADING_ENDPOINT, trader_id
         )
         body = {}
         headers = self.__get_headers_client()
@@ -140,7 +142,7 @@ class Tarkov:
             return None
 
         url = "{}/client/trading/api/getTraderAssort/{}".format(
-            TRADING_ENDPOINT, trader_id
+            constants.TRADING_ENDPOINT, trader_id
         )
         body = {}
         headers = self.__get_headers_client()
@@ -169,7 +171,7 @@ class Tarkov:
         return None
 
     def get_items(self):
-        url = "{}/client/items".format(PROD_ENDPOINT)
+        url = "{}/client/items".format(constants.PROD_ENDPOINT)
         body = {}
         headers = self.__get_headers_client()
 
@@ -186,7 +188,7 @@ class Tarkov:
         return None
 
     def get_i18n_english(self):
-        url = "{}/client/locale/en".format(PROD_ENDPOINT)
+        url = "{}/client/locale/en".format(constants.PROD_ENDPOINT)
         body = {}
         headers = self.__get_headers_client()
 
@@ -213,9 +215,9 @@ class Tarkov:
         self.req_counter += 1
         headers = {
             'Content-Type': 'application/json',
-            'User-Agent': 'UnityPlayer/{} (UnityWebRequest/1.0, libcurl/7.52.0-DEV)'.format(UNITY_VERSION),
-            'App-Version': 'EFT Client {}'.format(GAME_VERSION),
-            'X-Unity-Version': UNITY_VERSION,
+            'User-Agent': 'UnityPlayer/{} (UnityWebRequest/1.0, libcurl/7.52.0-DEV)'.format(constants.UNITY_VERSION),
+            'App-Version': 'EFT Client {}'.format(constants.GAME_VERSION),
+            'X-Unity-Version': constants.UNITY_VERSION,
             'Cookie': 'PHPSESSID={}'.format(self.session_id),
             'GClient-RequestId': str(self.req_counter)
         }

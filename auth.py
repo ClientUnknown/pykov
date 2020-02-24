@@ -2,7 +2,7 @@ import requests
 import json
 import zlib
 from hashlib import md5
-from pykov.constants import *
+from pykov import constants
 
 # Object used to login and store session info
 class Auth:
@@ -14,7 +14,7 @@ class Auth:
     # Login to launcher with POST request; use 2fa if needed
     def login(self, email, password):
         url = "{}/launcher/login?launcherVersion={}&branch=live".format(
-            LAUNCHER_ENDPOINT, LAUNCHER_VERSION
+            constants.LAUNCHER_ENDPOINT, constants.LAUNCHER_VERSION
         )
         password = md5(password.encode('utf-8')).hexdigest()
         url = url.rstrip()
@@ -22,7 +22,7 @@ class Auth:
 
         body = {"email":email, "pass":password, "hwCode":self.hwid, "captcha":""}
         headers = {
-            'User-Agent': 'BSG Launcher {}'.format(LAUNCHER_VERSION), 
+            'User-Agent': 'BSG Launcher {}'.format(constants.LAUNCHER_VERSION), 
             'Content-Type': 'application/json',
             'Content-Encoding': 'gzip' }
         cookies = {}
@@ -47,12 +47,12 @@ class Auth:
     def login_2fa(self, email):
         code = input("Enter the 2fa code: ")
         url = "{}/launcher/hardwareCode/activate?launcherVersion={}".format(
-            LAUNCHER_ENDPOINT, LAUNCHER_VERSION
+            constants.LAUNCHER_ENDPOINT, constants.LAUNCHER_VERSION
         )
 
         body = {"email":email, "hwCode":self.hwid, "activateCode":code}
         headers = {
-            'User-Agent': 'BSG Launcher {}'.format(LAUNCHER_VERSION),
+            'User-Agent': 'BSG Launcher {}'.format(constants.LAUNCHER_VERSION),
             'Content-Type': 'application/json' }
         
         rsp = requests.post(url, json=body, headers=headers)
@@ -64,20 +64,30 @@ class Auth:
 
     def exchange_access_token(self, access_token, hwid):
         url = "{}/launcher/game/start?launcherVersion={}&branch=live".format(
-            PROD_ENDPOINT, LAUNCHER_VERSION
+            constants.PROD_ENDPOINT, constants.LAUNCHER_VERSION
         )
-        body = {"version": {"major":GAME_VERSION, "backend":"6"}, "hwCode":hwid}
+        body = {"version": {"major":constants.GAME_VERSION, "backend":"6"}, "hwCode":hwid}
         headers = {
             'Content-Type': 'application/json',
-            'User-Agent': 'BSG Launcher {}'.format(LAUNCHER_VERSION),
+            'User-Agent': 'BSG Launcher {}'.format(constants.LAUNCHER_VERSION),
             'Authorization': access_token }
+        content = None
 
         rsp = requests.post(url, json=body, headers=headers)
-        if rsp.status_code == 200:
-            print("Successfully authorized")
-        else:
-            print("Could not authorize account; response: {}".format(rsp.status_code))
-        
-        rsp = zlib.decompress(rsp.content).decode()
+        try:
+            content = zlib.decompress(rsp.content).decode()
+        except:
+            pass
 
-        return json.loads(rsp)
+        if not content:
+            print("exchange_access_token failed; {}".format(rsp.status_code))
+        elif "errmsg" in content and '"err":0,' not in content:
+            print("Error while authorizing: {}".format(content))
+        else:
+            print("Successfully authorized")
+            return json.loads(content)
+
+        print("Unable to complete authorization, exiting")
+        print(rsp.status_code)
+        print(content)
+        exit(-1)

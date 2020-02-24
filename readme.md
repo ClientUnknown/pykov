@@ -14,6 +14,10 @@ Login with two-factor authentication is supported, but the user will need to man
 * Retrieval of information like items, traders, and profiles
 * Easy to use JSON in Python's dictionary format
 
+# Pip Package
+
+There is currently a pip package available using **pip install pykov-eft**. Please note that the package may not be as up-to-date as this repository.
+
 # Example
 
 A basic example is included under example.py, along with the example_get_all_items.txt file that it produces. More example usage will be provided in the future.

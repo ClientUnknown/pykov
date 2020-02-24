@@ -1,4 +1,5 @@
 import pykov
+import json
 
 email = "enter EFT email here"
 password = "enter EFT password here"

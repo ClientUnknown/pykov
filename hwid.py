@@ -13,9 +13,9 @@ def generate_hwid():
     try:
         f_hwid = open(file_name, "r+")
         hwid = f_hwid.readline()
-    except IOError:
+    except:
         print("Creating hwid.txt")
-        f_hwid = open(file_name, "w").close()
+        f_hwid = open(file_name, "w")
 
     if hwid:
         print("Found a hardware id")

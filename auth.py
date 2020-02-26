@@ -36,6 +36,7 @@ class Auth:
             con = zlib.decompress(self.rsp.content).decode()
             if "Need confirm" in con:
                 print("Need to authorize connection with 2fa")
+                sleep(uniform(3.5,10.5))
                 self.sess = self.login_2fa(email)
                 self.rsp = requests.post(url, json=body, headers=headers, cookies=cookies)
             elif "Wrong parameters" in con:

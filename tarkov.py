@@ -200,6 +200,23 @@ class Tarkov:
         
         return None
 
+    def get_item_price_market(self, item_name):
+        url = "{}/client/ragfair/itemMarketPrice".format(constants.RAGFAIR_ENDPOINT)
+        body = {"templateId": item_name}
+        headers = self.__get_headers_client()
+
+        rsp = requests.post(url, json=body, headers=headers)
+        content = self.__decompress_json_request(rsp.content)
+
+        if not content:
+            print("get_item_price_market failed: {}".format(rsp.status_code))
+        elif "err" in content and '"err":0,' not in content:
+            print("Error retrieving item price: {}".format(content))
+        else:
+            return(json.loads(content))
+
+        return None
+
     # Returns a dictionary with the English translation table
     def get_i18n_english(self):
         url = "{}/client/locale/en".format(constants.PROD_ENDPOINT)

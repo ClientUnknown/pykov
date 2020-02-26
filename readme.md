@@ -6,7 +6,10 @@ The main goal of this API is to provide simple and concise methods for retrievin
 
 # Login
 
-Login with two-factor authentication is supported, but the user will need to manually enter the authentication code when prompted.  **CAPTCHA is NOT supported**
+Login with two-factor authentication is supported, but the user will need to manually enter the authentication code when prompted. Captcha bypass is possible thanks to Cosmos3904 https://github.com/Cosmo3904/Recaptcha-Harvester-V2
+
+**Notes For Captcha:**
+To bypass the Captcha you will need to download ChromeDriver first and then add it to your system's path https://sites.google.com/a/chromium.org/chromedriver/downloads
 
 # Features so far include:
 

@@ -3,6 +3,9 @@ import json
 import zlib
 from hashlib import md5
 from pykov import constants
+from pykov import Harvester
+from random import uniform
+from time import sleep
 
 # Object used to login and store session info
 class Auth:
@@ -37,12 +40,26 @@ class Auth:
                 self.rsp = requests.post(url, json=body, headers=headers, cookies=cookies)
             elif "Wrong parameters" in con:
                 print("Incorrect parameters in POST")
+                exit(-1)
+            elif "captcha" in con:
+                print("Need to bypass captcha...")
+                sleep(uniform(3.5,10.5))
+                login_captcha()
             else:
                 print("Successfully logged in")
 
         rsp = zlib.decompress(self.rsp.content).decode()
 
         return json.loads(rsp)
+
+    # Bypass the captcha if required
+    def login_captcha(self):
+        h = Harvester.harvest("6LexEI4UAAAAAIFtNZALcloZfEgHhB8rEUqC1LwV",
+        "https://launcher.escapefromtarkov.com/launcher/login",
+        "127.0.0.1")
+
+        h.signin()
+        h.solve()
 
     # Complete login if two-factor authentication is required; prompt user for input
     def login_2fa(self, email):

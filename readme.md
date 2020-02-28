@@ -21,6 +21,8 @@ To bypass the Captcha you will need to download ChromeDriver first and then add 
 
 There is currently a pip package available using **pip install pykov-eft**. Please note that the package may not be as up-to-date as this repository.
 
+Requires Flask and selenium.
+
 # Example
 
 A basic example is included under example.py, along with the example_get_all_items.txt file that it produces. More example usage will be provided in the future.
